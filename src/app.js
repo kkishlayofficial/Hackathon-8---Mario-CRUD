@@ -13,6 +13,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 var x = 1;
 // your code goes here
+
+// Get ALL
+
 app.get("/mario", async (req, res) => {
   const total = await marioModel.find();
   const all = total.map((data) => {
@@ -23,6 +26,9 @@ app.get("/mario", async (req, res) => {
   });
   res.send(all);
 });
+
+//Get One
+
 app.get("/mario/:id", async (req, res) => {
   const id = req.params.id;
   try {
@@ -35,6 +41,8 @@ app.get("/mario/:id", async (req, res) => {
     res.status(400).send({ message: e.message });
   }
 });
+
+//Create
 
 app.post("/mario", async (req, res) => {
   if (req.body.name && req.body.weight) {
@@ -49,19 +57,7 @@ app.post("/mario", async (req, res) => {
   }
 });
 
-app.delete("/mario/:id", async (req, res) => {
-  const id = req.params.id;
-  try {
-    await marioModel.deleteOne({ _id: id });
-    res.send({
-      message: "character deleted",
-    });
-  } catch (e) {
-    res.status(400).send({
-      message: e.message,
-    });
-  }
-});
+//Update
 
 app.patch("/mario/:id", async (req, res) => {
   const id = req.params.id;
@@ -89,9 +85,26 @@ app.patch("/mario/:id", async (req, res) => {
         }
       );
     }
-    res.send({ name: existing.name, weight: existing.weight });
+    const newExisting = await marioModel.findOne({ _id: id });
+    res.send({ name: newExisting.name, weight: newExisting.weight });
   } catch (e) {
     res.status(400).send({ message: e.message });
+  }
+});
+
+//Delete
+
+app.delete("/mario/:id", async (req, res) => {
+  const id = req.params.id;
+  try {
+    await marioModel.deleteOne({ _id: id });
+    res.send({
+      message: "character deleted",
+    });
+  } catch (e) {
+    res.status(400).send({
+      message: e.message,
+    });
   }
 });
 
